@@ -12,6 +12,7 @@ angular.module('ui.date', [])
 
 .directive('uiDate', ['uiDateConfig', 'uiDateConverter', function (uiDateConfig, uiDateConverter) {
   'use strict';
+
   var options;
   options = {};
   angular.extend(options, uiDateConfig);
@@ -97,45 +98,47 @@ angular.module('ui.date', [])
       scope.$watch(getOptions, initDateWidget, true);
     }
   };
-}
-])
+}])
 .factory('uiDateConverter', ['uiDateFormatConfig', function(uiDateFormatConfig){
+  'use strict';
 
-    function dateToString(dateFormat, value){
-        dateFormat = dateFormat || uiDateFormatConfig;
-        if (value) {
-            if (dateFormat) {
-                return jQuery.datepicker.formatDate(dateFormat, value);
-            }
+  function dateToString(dateFormat, value){
+      dateFormat = dateFormat || uiDateFormatConfig;
+      if (value) {
+          if (dateFormat) {
+              return jQuery.datepicker.formatDate(dateFormat, value);
+          }
 
-            if (value.toISOString) {
-                return value.toISOString();
-            }
-        }
-        return null;
-    }
+          if (value.toISOString) {
+              return value.toISOString();
+          }
+      }
+      return null;
+  }
 
-    function stringToDate(dateFormat, value) {
-        dateFormat = dateFormat || uiDateFormatConfig;
-        if ( angular.isString(value) ) {
-            if (dateFormat) {
-                return jQuery.datepicker.parseDate(dateFormat, value);
-            }
+  function stringToDate(dateFormat, value) {
+      dateFormat = dateFormat || uiDateFormatConfig;
+      if ( angular.isString(value) ) {
+          if (dateFormat) {
+              return jQuery.datepicker.parseDate(dateFormat, value);
+          }
 
-            var isoDate = new Date(value);
-            return isNaN(isoDate.getTime()) ? null : isoDate;
-        }
-        return null;
-    }
+          var isoDate = new Date(value);
+          return isNaN(isoDate.getTime()) ? null : isoDate;
+      }
+      return null;
+  }
 
-    return {
-        stringToDate: stringToDate,
-        dateToString: dateToString
-    };
+  return {
+      stringToDate: stringToDate,
+      dateToString: dateToString
+  };
 
 }])
 .constant('uiDateFormatConfig', '')
 .directive('uiDateFormat', ['uiDateConverter', function(uiDateConverter) {
+  'use strict';
+
   var directive = {
     require:'ngModel',
     link: function(scope, element, attrs, modelCtrl) {
