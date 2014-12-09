@@ -26,6 +26,11 @@ angular.module('ui.date', [])
         var showing = false;
         var opts = getOptions();
 
+        // Prevent IE10+ from overriding the currently selected datepicker
+        // when there are other pickers refreshing state
+        var waitingForSelection = !!scope.showingPicker && !scope.pickerSelect;
+        if (waitingForSelection) { return; }
+
         // If we have a controller (i.e. ngModelController) then wire it up
         if (controller) {
 
@@ -36,20 +41,26 @@ angular.module('ui.date', [])
             scope.$apply(function() {
               showing = true;
               controller.$setViewValue(element.datepicker('getDate'));
+              scope.pickerSelect = true;
+
               _onSelect(value, picker);
-              //element.blur();
             });
           };
 
           var _beforeShow = opts.beforeShow || angular.noop;
           opts.beforeShow = function(input, picker) {
             showing = true;
+            scope.showingPicker = true;
+
             _beforeShow(input, picker);
           };
 
           var _onClose = opts.onClose || angular.noop;
           opts.onClose = function(value, picker) {
             showing = false;
+            delete scope.showingPicker;
+            delete scope.pickerSelect;
+
             _onClose(value, picker);
           };
           element.off('blur.datepicker').on('blur.datepicker', function() {
